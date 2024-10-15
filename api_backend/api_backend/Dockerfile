@@ -1,3 +1,5 @@
+# api_backend/Dockerfile
+
 # Use official Python image as base
 FROM python:3.12-slim
 
@@ -22,14 +24,11 @@ RUN pip install -r requirements.txt
 # Copy project
 COPY . /app/
 
-# Collect static files (optional, since no data storage)
+# Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Expose port
+# Expose port (optional, since Vercel handles routing)
 EXPOSE 8000
 
-# Run migrations (optional, since no data storage)
-# RUN python manage.py migrate
-
-# Define the default command
-CMD ["gunicorn", "api_backend.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Define the default command to run the application
+CMD ["gunicorn", "api_backend.wsgi:application", "--bind", "0.0.0.0:${PORT}"]

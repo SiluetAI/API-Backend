@@ -2,13 +2,13 @@
     "builds": [
       {
         "src": "api_backend/Dockerfile",
-        "use": "@vercel/docker"
+        "use": "@vercel/Dockerfile"
       }
     ],
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "http://0.0.0.0:8000/$1"
+        "dest": "http://0.0.0.0:$PORT/$1"
       }
     ]
   }
