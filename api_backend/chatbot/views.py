@@ -9,6 +9,8 @@ import logging
 import time
 from dotenv import load_dotenv
 from django.views.generic import TemplateView
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 load_dotenv()
 # Configure logging
@@ -17,7 +19,8 @@ logger = logging.getLogger(__name__)
 
 class HomeTemplateView(TemplateView):
     template_name = 'home.html'
-        
+    
+@method_decorator(csrf_exempt, name='dispatch')      
 class ManychatWebhookView(APIView):
     def post(self, request):
         start_time = time.time()

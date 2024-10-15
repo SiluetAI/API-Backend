@@ -1,0 +1,15 @@
+{
+    "builds": [
+      {
+        "src": "api_backend/Dockerfile",
+        "use": "@vercel/docker"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "http://0.0.0.0:8000/$1"
+      }
+    ]
+  }
+  
