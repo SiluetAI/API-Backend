@@ -3,29 +3,20 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 import openai
+from openai import OpenAI
 import os
 import logging
 import time
+from dotenv import load_dotenv
+from django.views.generic import TemplateView
 
+load_dotenv()
 # Configure logging
 logger = logging.getLogger(__name__)
 
-class HomeView(APIView):
-    """
-    Simple Home View to confirm the API is running.
-    """
-    def get(self, request):
-        return Response(
-            {
-                "message": "Welcome to the Manychat-GPT-4 Integration API!",
-                "endpoints": {
-                    "admin": "/admin/",
-                    "Manychat Webhook": "/api/manychat_webhook/"
-                },
-                "status": "API is up and running."
-            },
-            status=status.HTTP_200_OK
-        )
+
+class HomeTemplateView(TemplateView):
+    template_name = 'home.html'
         
 class ManychatWebhookView(APIView):
     def post(self, request):
@@ -51,11 +42,23 @@ class ManychatWebhookView(APIView):
                 {"role": "user", "content": last_input_text}
             ]
 
-            # Set OpenAI API key
-            openai.api_key = os.getenv('OPENAI_API_KEY')
+            # Set OpenAI API key  
+            api_key = os.getenv('OPENAI_API_KEY')
+            print(f"API Key: {api_key}")
+
+            if not api_key:
+                logger.error("API Key not found. Please check your .env file.")
+                return Response(
+                    {'error': 'API Key not found.'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+                
+            client = OpenAI(
+                api_key=api_key,
+            )
 
             # Call GPT-4 API
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4",
                 messages=messages,
                 max_tokens=150,
@@ -63,7 +66,7 @@ class ManychatWebhookView(APIView):
                 temperature=0.7,
             )
 
-            ai_answer = response.choices[0].message['content'].strip()
+            ai_answer = response.choices[0].message.content
 
             # Map response to Manychat's custom fields
             manychat_response = {
@@ -76,13 +79,16 @@ class ManychatWebhookView(APIView):
             logger.info(f"Response time: {end_time - start_time} seconds")
 
             return Response(manychat_response, status=status.HTTP_200_OK)
-
-        except openai.APIError as oe:
-            logger.error(f"OpenAI API error: {str(oe)}")
-            return Response(
-                {'error': 'Error communicating with OpenAI API.'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+        
+        except openai.APIConnectionError as e:
+            print("The server could not be reached")
+            print(e.__cause__)  # an underlying Exception, likely raised within httpx.
+        except openai.RateLimitError as e:
+            print("A 429 status code was received; we should back off a bit.")
+        except openai.APIStatusError as e:
+            print("Another non-200-range status code was received")
+            print(e.status_code)
+            print(e.response)
         except Exception as e:
             logger.error(f"Internal server error: {str(e)}")
             return Response(
