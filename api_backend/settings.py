@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-_n58p&l2!1v4y_%)jx@%47350a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ["*", 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ["*", 'manychat-api-6217c145bce1.herokuapp.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -59,7 +59,7 @@ ROOT_URLCONF = 'api_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['chatbot', 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'chatbot', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
