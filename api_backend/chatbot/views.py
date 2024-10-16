@@ -102,7 +102,6 @@ Use examples for response length and tone. Please do not use markdown or hyperli
 This is very crucial for me that you follow the instructions and help users properly. It influences our customer support and company as a whole, so please, work correctly and follow the instructions above. It is very important for me.
 """
 
-
 class HomeTemplateView(TemplateView):
     template_name = 'home.html'
     
@@ -155,7 +154,6 @@ class ManychatWebhookView(APIView):
                 temperature=0.7,
             )
             
-
             ai_answer = response.choices[0].message.content
 
             # Map response to Manychat's custom fields
