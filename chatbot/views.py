@@ -104,6 +104,11 @@ This is very crucial for me that you follow the instructions and help users prop
 
 class HomeTemplateView(TemplateView):
     template_name = 'home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['production'] = os.getenv('ENV') == 'production'
+        return context
     
 @method_decorator(csrf_exempt, name='dispatch')      
 class ManychatWebhookView(APIView):
