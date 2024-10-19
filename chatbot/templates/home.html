@@ -33,9 +33,11 @@
     <p>Your API is up and running.</p>
     <div class="endpoints">
         <h2>Available Endpoints:</h2>
+        {% if not production %}
         <a href="/admin/">Admin Interface</a>
         <a href="/swagger/">Swagger Documentation</a>
         <a href="/redoc/">ReDoc Documentation</a>
+        {% endif %}
         <a href="/api/manychat_webhook/">Manychat Webhook</a>
     </div>
 </body>
